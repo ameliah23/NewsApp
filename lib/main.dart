@@ -1,217 +1,197 @@
+import 'package:newsapp/new_account.dart';
+import 'package:newsapp/second_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:newsapp/signup.dart';
-import 'package:newsapp/home_screen.dart';
-import 'dart:convert';
+import 'dart:async';
 import 'package:http/http.dart' as http;
-
-
+import 'dart:convert';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'News App ',
+      title: 'AppChat ',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: Colors.purple,
         accentColor: Color(0xFFFEF9EB),
       ),
-      home: MyHomePage(),
 
+      home: MyHomePage(),
     );
   }
 }
-
 
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
-class _MyHomePageState extends State {
-  bool visible = false ;
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+class _MyHomePageState extends State<MyHomePage> {
+  var _pseudoController = new TextEditingController();
+  var _passwordController = new TextEditingController();
+  var data;
 
-  Future userLogin() async {
+  var _isSecured = true;
 
-    setState(() {
-      visible = true;
-    });
+  @override
+  Widget build(BuildContext context) {
 
+    Future<String> getLogin(String pseudo) async {
+      var response = await http.get(
+          Uri.encodeFull(
+              "https://flutternewsapp.000webhostapp.com/Login.php?PSEUDO=${pseudo}"),
+          headers: {"Accept": "application/json"});
 
-    String email = emailController.text;
-    String password = passwordController.text;
-
-
-    var url = 'https://flutterprojectcrudamelia.000webhostapp.com/login_user.php';
-
-
-    var data = {'email': email, 'password': password};
-
-
-    var response = await http.post(url, body: json.encode(data));
-
-
-    var message = jsonDecode(response.body);
-
-
-    if (message == 'Login Matched') {
-
+      print(response.body);
       setState(() {
-        visible = false;
+        var convertDataToJson = json.decode(response.body);
+        data = convertDataToJson['result'];
       });
-
-
-      Navigator.push(
-        context, MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
-    } else {
-
-      setState(() {
-        visible = false;
-      });
-
-
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: new Text(message),
-            actions: <Widget>[
-              FlatButton(
-                child: new Text("OK"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
     }
-  }
 
-      Widget build(BuildContext context) {
-        return Scaffold(
-            resizeToAvoidBottomPadding: false,
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  child: Stack(
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.fromLTRB(15.0, 110.0, 0.0, 0.0),
-                        child: Text('Hello',
-                            style: TextStyle(
-                                fontSize: 80.0, fontWeight: FontWeight.bold)),
-                      ),
-                      Container(
-                        padding: EdgeInsets.fromLTRB(16.0, 175.0, 0.0, 0.0),
-                        child: Text('There',
-                            style: TextStyle(
-                                fontSize: 80.0, fontWeight: FontWeight.bold)),
-                      ),
-                      Container(
-                        padding: EdgeInsets.fromLTRB(220.0, 175.0, 0.0, 0.0),
-                        child: Text('.',
-                            style: TextStyle(
-                                fontSize: 80.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.purple)),
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                    padding: EdgeInsets.only(
-                        top: 35.0, left: 20.0, right: 20.0),
-                    child: Column(
-                      children: <Widget>[
-                        TextField(
-                          controller: emailController,
-                          decoration: InputDecoration(
-                              labelText: 'EMAIL',
-                              labelStyle: TextStyle(
-                                  fontFamily: 'Montserrat',
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey),
-                              focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors
-                                      .purple))),
-                        ),
-                        SizedBox(height: 20.0),
-                        TextField(
-                          controller: passwordController,
-                          decoration: InputDecoration(
-                              labelText: 'PASSWORD',
-                              labelStyle: TextStyle(
-                                  fontFamily: 'Montserrat',
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey),
-                              focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors
-                                      .purple))),
-                          obscureText: true,
-                        ),
-                        SizedBox(height: 5.0),
-                        Container(
-                          alignment: Alignment(1.0, 0.0),
-                          padding: EdgeInsets.only(top: 15.0, left: 20.0),
-                          child: InkWell(
-                            child: Text(
-                              'Forgot Password',
-                              style: TextStyle(
-                                  color: Colors.purple,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Montserrat',
-                                  decoration: TextDecoration.underline),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 40.0),
-                        RaisedButton(
-                          onPressed: () {
-                            userLogin();
-                          },
-                          color: Colors.purple,
-                          textColor: Colors.white,
-                          child: Text('Login'),
-                        ),
 
-                      ],
-                    )),
-                SizedBox(height: 15.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      'New to Account ?',
-                      style: TextStyle(fontFamily: 'Montserrat'),
-                    ),
-                    SizedBox(width: 5.0),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context, MaterialPageRoute(builder: (context) => SignupPage()),
-                        );
-                      },
-                      child: Text(
-                        'Register',
-                        style: TextStyle(
-                            color: Colors.purple,
-                            fontFamily: 'Montserrat',
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline),
-                      ),
-                    )
-                  ],
-                )
-              ],
-            ));
+    void onSignedInErrorPassword() {
+      var alert = new AlertDialog(
+        title: new Text("Pseudo Error"),
+        content: new Text(
+            "There was an Password error signing in. Please try again."),
+      );
+      showDialog(context: context, child: alert);
+    }
+
+
+    void onSignedInErrorPseudo() {
+      var alert = new AlertDialog(
+        title: new Text("Pseudo Error"),
+        content:
+        new Text("There was an Pseudo error signing in. Please try again."),
+      );
+      showDialog(context: context, child: alert);
+    }
+
+
+    VerifData(String pseudo, String password, var datadb) {
+      if (data[0]['username'] == pseudo) {
+        if (data[0]['password'] == password) {
+          // Navigator.of(context).pushNamed("/seconds");
+
+          var route = new MaterialPageRoute(
+            builder: (BuildContext context) =>
+            new SecondScreen(idUser: data[0]['user_id'],
+              firstname: data[0]['first_name'],
+              lastname: data[0]['last_name'],
+              username: data[0]['username'],),
+          );
+          Navigator.of(context).push(route);
+        } else {
+          onSignedInErrorPassword();
+        }
+      } else {
+        onSignedInErrorPseudo();
       }
     }
 
-
+      return new Scaffold(
+          resizeToAvoidBottomPadding: false,
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.fromLTRB(15.0, 110.0, 0.0, 0.0),
+                      child: Text('News',
+                          style: TextStyle(
+                              fontSize: 80.0, fontWeight: FontWeight.bold)),
+                    ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(16.0, 175.0, 0.0, 0.0),
+                      child: Text('App',
+                          style: TextStyle(
+                              fontSize: 80.0, fontWeight: FontWeight.bold)),
+                    ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(220.0, 175.0, 0.0, 0.0),
+                      child: Text('.',
+                          style: TextStyle(
+                              fontSize: 80.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.purple)),
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                  padding: EdgeInsets.only(top: 35.0, left: 20.0, right: 20.0),
+                  child: Column(
+                    children: <Widget>[
+                      TextField(
+                        controller: _pseudoController,
+                        decoration: InputDecoration(
+                            labelText: 'Username',
+                            labelStyle: TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey),
+                            focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.purple))),
+                      ),
+                      SizedBox(height: 20.0),
+                      TextField(
+                        controller: _passwordController,
+                        decoration: InputDecoration(
+                            labelText: 'Password',
+                            labelStyle: TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey),
+                            focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.purple))),
+                        obscureText: true,
+                      ),
+                      SizedBox(height: 5.0),
+                      SizedBox(height: 40.0),
+                      RaisedButton(
+                        onPressed: () {
+                          getLogin(_pseudoController.text);
+                          VerifData(_pseudoController.text, _passwordController.text, data);
+                        },
+                        color: Colors.purple,
+                        textColor: Colors.white,
+                        child: Text('Login'),
+                      ),
+                    ],
+                  )),
+              SizedBox(height: 15.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'New to Account ?',
+                    style: TextStyle(fontFamily: 'Montserrat'),
+                  ),
+                  SizedBox(width: 5.0),
+                  InkWell(
+                    onTap: () {
+                      var route = new MaterialPageRoute(
+                        builder: (BuildContext context) => new Register(),
+                      );
+                      Navigator.of(context).push(route);
+                    },
+                    child: Text(
+                      'Register',
+                      style: TextStyle(
+                          color: Colors.purple,
+                          fontFamily: 'Montserrat',
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline),
+                    ),
+                  )
+                ],
+              )
+            ],
+          ));
+    }
+  }

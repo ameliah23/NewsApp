@@ -1,13 +1,13 @@
+import 'package:newsapp/update_profile.dart';
 import 'package:flutter/material.dart';
-import 'package:newsapp/updateprofile.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 
 class Profile extends StatefulWidget {
-  var id;
-  Profile({Key key, this.id}) : super(key: key);
+  var idUser;
+  Profile({Key key, this.idUser}) : super(key: key);
   @override
   _ProfileState createState() => new _ProfileState();
 }
@@ -15,14 +15,16 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   List data;
   var _isLoading = false;
-  String name = "name";
-  String email = "email";
-  String password = "passwordd";
+  String user_name = "userName ",
+      first_name = "FirstName ",
+      last_name = "LastName ",
+      gender = "Gender ";
 
+  /**************** Get Login Connection && Data ************************/
   Future<String> getLogin(String id) async {
     var response = await http.get(
         Uri.encodeFull(
-            "https://flutterprojectcrudamelia.000webhostapp.com/consultProfile.php?ID=" +
+            "https://flutternewsapp.000webhostapp.com/ConsultProfile.php?ID=" +
                 id +
                 ""),
         headers: {"Accept": "application/json"});
@@ -32,9 +34,10 @@ class _ProfileState extends State<Profile> {
       var convertDataToJson = json.decode(response.body);
       data = convertDataToJson['result'];
       if (data != null) {
-        name = data[0]['username'];
-        email = data[0]['first_name'];
-        password = data[0]['last_name'];
+        user_name = data[0]['username'];
+        first_name = data[0]['first_name'];
+        last_name = data[0]['last_name'];
+        gender = data[0]['gender'];
       }
     });
     print(data);
@@ -44,7 +47,7 @@ class _ProfileState extends State<Profile> {
   void initState() {
     super.initState();
     setState(() {
-      getLogin(widget.id);
+      getLogin(widget.idUser);
     });
   }
 
@@ -62,129 +65,130 @@ class _ProfileState extends State<Profile> {
     {
       return new Scaffold(
         appBar: AppBar(
-          title: Text(" Menu"),
-          actions: <Widget>[
-            new IconButton(
-                icon: new Icon(Icons.call),
-                onPressed: () {
-                  _launchURL();
-                }),
-
-            // action button
-            new IconButton(
-              icon: new Icon(Icons.map),
-              onPressed: () {},
-            ),
-          ],
+          title: Text("Profile"),
         ),
         body: !_isLoading
             ? new CircularProgressIndicator()
             : new Container(
-          child: new Center(
-            child: Card(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      new Container(
-                        width: 60.0,
-                        height: 60.0,
-                        child: new CircleAvatar(
-                          minRadius: 50.0,
-                          backgroundColor: Colors.blue.shade50,
-                          child: new Text(name),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 5.0,
-                      ),
-                      Text(
-                        name,
-                        style: TextStyle(fontSize: 20.0),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  new Padding(
-                    padding: const EdgeInsets.all(8.0),
+                child: new Center(
+                  child: Card(
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         Row(
                           children: <Widget>[
-                            Text(
-                              "User Name : ",
-                              style: TextStyle(fontSize: 24.0),
-                            ),
-                            SizedBox(
-                              width: 5.0,
-                            ),
-                            Text(
-                              name,
-                              style: TextStyle(fontSize: 20.0),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Text(
-                              "Email : ",
-                              style: TextStyle(fontSize: 24.0),
-                            ),
-                            SizedBox(
-                              width: 5.0,
-                            ),
-                            Text(
-                              email,
-                              style: TextStyle(fontSize: 20.0),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Text(
-                              "First Name : ",
-                              style: TextStyle(fontSize: 24.0),
-                            ),
-                            SizedBox(
-                              width: 5.0,
-                            ),
-                            Text(
-                              password,
-                              style: TextStyle(fontSize: 20.0),
-                            )
-                          ],
-                        ),
-
-                      ],
-                    ),
-                  ),
-                  new ButtonTheme.bar(
-                    // make buttons use the appropriate styles for cards
-                    child: new ButtonBar(
-                      children: <Widget>[
-                        new FlatButton(
-                          child: const Text('Update'),
-                          onPressed: () {
-                            var route = new MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                              new Update(
-                                id: widget.id,
+                            new Container(
+                              width: 60.0,
+                              height: 60.0,
+                              child: new CircleAvatar(
+                                minRadius: 50.0,
+                                backgroundColor: Colors.blue.shade50,
+                                child: new Text(first_name),
                               ),
-                            );
-                            Navigator.of(context).push(route);
-                          },
+                            ),
+                            SizedBox(
+                              width: 5.0,
+                            ),
+                            Text(
+                              user_name,
+                              style: TextStyle(fontSize: 20.0),
+                            )
+                          ],
+                        ),
+                        SizedBox(
+                          height: 20.0,
+                        ),
+                        new Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  Text(
+                                    "User Name : ",
+                                    style: TextStyle(fontSize: 24.0),
+                                  ),
+                                  SizedBox(
+                                    width: 5.0,
+                                  ),
+                                  Text(
+                                    user_name,
+                                    style: TextStyle(fontSize: 20.0),
+                                  )
+                                ],
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  Text(
+                                    "Last Name : ",
+                                    style: TextStyle(fontSize: 24.0),
+                                  ),
+                                  SizedBox(
+                                    width: 5.0,
+                                  ),
+                                  Text(
+                                    last_name,
+                                    style: TextStyle(fontSize: 20.0),
+                                  )
+                                ],
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  Text(
+                                    "First Name : ",
+                                    style: TextStyle(fontSize: 24.0),
+                                  ),
+                                  SizedBox(
+                                    width: 5.0,
+                                  ),
+                                  Text(
+                                    first_name,
+                                    style: TextStyle(fontSize: 20.0),
+                                  )
+                                ],
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  Text(
+                                    "Gender : ",
+                                    style: TextStyle(fontSize: 24.0),
+                                  ),
+                                  SizedBox(
+                                    width: 5.0,
+                                  ),
+                                  Text(
+                                    gender,
+                                    style: TextStyle(fontSize: 20.0),
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        new ButtonTheme.bar(
+                          // make buttons use the appropriate styles for cards
+                          child: new ButtonBar(
+                            children: <Widget>[
+                              new FlatButton(
+                                child: const Text('Update'),
+                                onPressed: () {
+                                  var route = new MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        new Update(
+                                          idUser: widget.idUser,
+                                        ),
+                                  );
+                                  Navigator.of(context).push(route);
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
       );
     }
   }

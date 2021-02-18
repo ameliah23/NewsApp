@@ -1,55 +1,54 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class SignupPage extends StatefulWidget {
+class Register extends StatefulWidget {
   @override
-  _SignupPageState createState() => _SignupPageState();
+  _RegisterState createState() => new _RegisterState();
 }
 
-class _SignupPageState extends State<SignupPage> {
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  bool visible = false ;
+class _RegisterState extends State<Register> {
 
-  Future userRegistration() async{
 
-    setState(() {
-      visible = true;
-    });
-
-    String name = nameController.text;
-    String email = emailController.text;
-    String password = passwordController.text;
-
-    var url = 'https://flutterprojectcrudamelia.000webhostapp.com/register_user.php';
-    var data = {'name': name, 'email': email, 'password': password};
-    var response = await http.post(url, body: json.encode(data));
-    var message = jsonDecode(response.body);
-
-    if(response.statusCode == 200){
-      setState(() {
-        visible = false;
-      });
-    }
-
-    showDialog(
-        context: context,
-        builder: (BuildContext context){
-          return AlertDialog(
-            title: new Text(message),
-            actions: <Widget>[
-              FlatButton(
-                child: new Text("OK"),
-                onPressed: (){
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
+  void onCreatedAccount() {
+    var alert = new AlertDialog(
+      title: new Text('Info'),
+      content: new SingleChildScrollView(
+        child: new ListBody(
+          children: <Widget>[
+            new Text('You have created a new Account.'),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        new FlatButton(
+          child: new Text('Ok'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
     );
+    showDialog(context: context, child: alert);
+  }
+
+  var _usernameController = new TextEditingController();
+  var _firstnameController = new TextEditingController();
+  var _lastnameController = new TextEditingController();
+  var _genderController = new TextEditingController();
+  var _passwordController = new TextEditingController();
+  void _addData() {
+    var url =
+        "https://flutternewsapp.000webhostapp.com/NewUser.php";
+
+    http.post(url, body: {
+      "username": _usernameController.text,
+      "firstname": _firstnameController.text,
+      "gender": _genderController.text,
+      "lastname": _lastnameController.text,
+      "password": _passwordController.text
+    });
+    onCreatedAccount();
+    //print(_adresseController.text);
   }
 
   @override
@@ -87,9 +86,9 @@ class _SignupPageState extends State<SignupPage> {
               child: Column(
                 children: <Widget>[
                   TextField(
-                    controller: emailController,
+                    controller:_usernameController,
                     decoration: InputDecoration(
-                        labelText: 'EMAIL',
+                        labelText: 'Username',
                         labelStyle: TextStyle(
                             fontFamily: 'Montserrat',
                             fontWeight: FontWeight.bold,
@@ -101,9 +100,9 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   SizedBox(height: 10.0),
                   TextField(
-                    controller: passwordController,
+                    controller:_passwordController,
                     decoration: InputDecoration(
-                        labelText: 'PASSWORD ',
+                        labelText: 'Password',
                         labelStyle: TextStyle(
                             fontFamily: 'Montserrat',
                             fontWeight: FontWeight.bold,
@@ -114,9 +113,33 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   SizedBox(height: 10.0),
                   TextField(
-                    controller: nameController,
+                    controller:_firstnameController,
                     decoration: InputDecoration(
-                        labelText: 'NICK NAME ',
+                        labelText: 'First Name ',
+                        labelStyle: TextStyle(
+                            fontFamily: 'Montserrat',
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey),
+                        focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.purple))),
+                  ),
+                  SizedBox(height: 10.0),
+                  TextField(
+                    controller:_lastnameController,
+                    decoration: InputDecoration(
+                        labelText: 'Last Name ',
+                        labelStyle: TextStyle(
+                            fontFamily: 'Montserrat',
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey),
+                        focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.purple))),
+                  ),
+                  SizedBox(height: 10.0),
+                  TextField(
+                    controller:_genderController,
+                    decoration: InputDecoration(
+                        labelText: 'Gender ',
                         labelStyle: TextStyle(
                             fontFamily: 'Montserrat',
                             fontWeight: FontWeight.bold,
@@ -127,7 +150,7 @@ class _SignupPageState extends State<SignupPage> {
                   SizedBox(height: 50.0),
                   RaisedButton(
                     onPressed: () {
-                      userRegistration();
+                      _addData();
                     },
                     color: Colors.purple,
                     textColor: Colors.white,
